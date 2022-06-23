@@ -23,5 +23,5 @@ func (r SimpleRedactor) Redact(s string) string {
 }
 
 func (r SimpleRedactor) String() string {
-	return fmt.Sprintf("{replacement:%q}", r.replacement)
+	return fmt.Sprintf("{replacement=%q}", r.replacement)
 }

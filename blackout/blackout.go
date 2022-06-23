@@ -45,5 +45,5 @@ func (r BlackoutRedactor) redactWord(word string) string {
 }
 
 func (r BlackoutRedactor) String() string {
-	return fmt.Sprintf("{replacement:%q}", r.replacement)
+	return fmt.Sprintf("{replacement=%q}", r.replacement)
 }
