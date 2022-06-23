@@ -2,6 +2,7 @@ package blackout
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 
 	"github.com/kristinjeanna/redact"
@@ -41,4 +42,8 @@ func (r BlackoutRedactor) redactWord(word string) string {
 	}
 
 	return b.String()
+}
+
+func (r BlackoutRedactor) String() string {
+	return fmt.Sprintf("{replacement:%q}", r.replacement)
 }
