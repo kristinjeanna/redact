@@ -12,4 +12,5 @@ func Example() {
 	sampleString := "this string contains sensitive information"
 
 	fmt.Println(redactor.Redact(sampleString))
+	// Output: thXX XtrXng contaXnX XenXXtXve XnformatXon
 }
