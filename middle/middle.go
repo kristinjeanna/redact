@@ -16,14 +16,15 @@ const (
 
 func (m Mode) String() string {
 	switch m {
-	case FullMode:
-		return "FullMode"
 	case PrefixOnlyMode:
 		return "PrefixOnlyMode"
 	case SuffixOnlyMode:
 		return "SuffixOnlyMode"
+	case FullMode:
+		fallthrough
+	default:
+		return "FullMode"
 	}
-	return "<unknown>"
 }
 
 const (
