@@ -73,6 +73,21 @@ func TestRedact_err(t *testing.T) {
 	}
 }
 
+func TestNewPair_err(t *testing.T) {
+	_, err := NewPair("test", "")
+	if err == nil {
+		t.Errorf("Expected '%v', but got nil", errRegexEmpty)
+	}
+	if err != errRegexEmpty {
+		t.Errorf("Expected '%v', but got '%v'", errRegexEmpty, err)
+	}
+
+	_, err = NewPair("test", "foo+++++")
+	if err == nil {
+		t.Error("Expected an error, but got nil")
+	}
+}
+
 func TestString(t *testing.T) {
 	pair, _ := NewPair("[redacted]", "test")
 	redactor, _ := New([]Pair{*pair})
