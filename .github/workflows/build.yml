@@ -1,4 +1,4 @@
-name: Build Package
+name: Build and test package
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ '1.14', '1.17' ]
+        go: [ '1.14', '1.18' ]
 
     steps:
     - name: Checkout project
@@ -22,21 +22,18 @@ jobs:
       with:
         go-version: ${{ matrix.go }}
 
-    - name: Install dependencies
+    - name: Install tools and dependencies
       run: |
         go version
-        go get -u golang.org/x/lint/golint
-        go get -u github.com/fatih/set
-        go get -u github.com/relvacode/iso8601
-        go get -u github.com/spf13/cobra
+        go install honnef.co/go/tools/cmd/staticcheck@latest
+
+    - name: Run tests
+      run: go test -v ./...
 
     - name: Run build
-      run: go build .
+      run: go build -v -a ./...
 
-    - name: Run vet & lint
+    - name: Run vet & staticcheck
       run: |
-        go vet .
-        golint .
-
-    - name: Run testing
-      run: go test -v
+        go vet ./...
+        staticcheck ./...
