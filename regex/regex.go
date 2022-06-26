@@ -67,12 +67,12 @@ func New(rePairs []Pair) (redact.Redactor, error) {
 }
 
 // Redact simply returns the replacement text for any string passed to it.
-func (r RegexRedactor) Redact(s string) string {
+func (r RegexRedactor) Redact(s string) (string, error) {
 	src := s
 
 	for _, pair := range r.pairs {
 		src = pair.compiled.ReplaceAllString(src, pair.replacement)
 	}
 
-	return src
+	return src, nil
 }

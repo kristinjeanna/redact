@@ -40,7 +40,10 @@ func TestRedact(t *testing.T) {
 			if err != nil { // err not expected
 				t.Error(err)
 			}
-			got := r.Redact(tc.input)
+			got, err := r.Redact(tc.input)
+			if err != nil {
+				t.Error(err)
+			}
 			if tc.expected != got {
 				t.Errorf("Expected '%s', but got '%s'", tc.expected, got)
 			}

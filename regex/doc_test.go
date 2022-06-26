@@ -1,20 +1,30 @@
 package regex
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 const sampleString = "this string contains sensitive information"
 
 func Example() {
+	// a Pair hold the regex and the replacement string for matches
 	pair, err := NewPair("X", "[is]")
 	if err != nil {
-		panic(err)
+		log.Fatalf("an error occurred while create regex replacement pair: %s", err)
 	}
 
+	// the redactor is contructed with a slice of Pairs
 	redactor, err := New([]Pair{*pair})
 	if err != nil {
-		panic(err)
+		log.Fatalf("an error occurred while creating redactor: %s", err)
 	}
 
-	fmt.Println(redactor.Redact(sampleString))
+	result, err := redactor.Redact(sampleString)
+	if err != nil {
+		log.Fatalf("an error occurred while redacting: %s", err)
+	}
+
+	fmt.Println(result)
 	// Output: thXX XtrXng contaXnX XenXXtXve XnformatXon
 }
