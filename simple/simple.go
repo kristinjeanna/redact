@@ -18,8 +18,8 @@ func New(replacement string) redact.Redactor {
 }
 
 // Redact simply returns the replacement text for any string passed to it.
-func (r SimpleRedactor) Redact(s string) string {
-	return r.replacement
+func (r SimpleRedactor) Redact(s string) (string, error) {
+	return r.replacement, nil
 }
 
 func (r SimpleRedactor) String() string {

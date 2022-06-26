@@ -1,11 +1,19 @@
 package simple
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 func Example() {
 	redactor := New("[redacted]")
 	sampleString := "this string contains sensitive information"
 
-	fmt.Println(redactor.Redact(sampleString))
+	result, err := redactor.Redact(sampleString)
+	if err != nil {
+		log.Fatalf("an error occurred while redacting: %s", err)
+	}
+
+	fmt.Println(result)
 	// Output: [redacted]
 }
