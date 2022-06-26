@@ -8,14 +8,22 @@ import (
 	"github.com/kristinjeanna/redact"
 )
 
+const (
+	// Regex for an HTTP authorization header
+	AuthHeaderRegex string = `(?i)(Authorization[\s]*:[\s]*).*`
+
+	// Regex for a US Social Security Number
+	SSNRegex string = `(\d{3}-?\d{2}-?\d{4})`
+)
+
 var (
 	errRegexEmpty        = errors.New("regex is required")
 	errRePairsSliceNil   = errors.New("regex pairs slice must not be nil")
 	errRePairsSliceEmpty = errors.New("regex slice must not be empty")
 )
 
-// Pair represents a regular expression and the
-// corresponding replacement expression.
+// Pair represents a regular expression and the corresponding
+// expression that replaces regex matches
 type Pair struct {
 	replacement string
 	regex       string
