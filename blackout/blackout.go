@@ -21,7 +21,7 @@ func New(replacement string) redact.Redactor {
 
 // Redact returns a string with each character of each word
 // replaced by the redactor's replacement text.
-func (r BlackoutRedactor) Redact(s string) string {
+func (r BlackoutRedactor) Redact(s string) (string, error) {
 	var b bytes.Buffer
 	words := strings.Fields(s)
 	count := len(words)
@@ -32,7 +32,7 @@ func (r BlackoutRedactor) Redact(s string) string {
 			b.WriteString(" ")
 		}
 	}
-	return b.String()
+	return b.String(), nil
 }
 
 func (r BlackoutRedactor) redactWord(word string) string {

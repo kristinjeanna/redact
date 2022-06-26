@@ -20,7 +20,10 @@ func TestRedact(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(fmt.Sprintf("input=%q;replacement=%q;expected=%q; ", tc.input, tc.replacement, tc.expected), func(t *testing.T) {
 			r := New(tc.replacement)
-			got := r.Redact(tc.input)
+			got, err := r.Redact(tc.input)
+			if err != nil {
+				t.Error(err)
+			}
 			if tc.expected != got {
 				t.Errorf("Expected '%s', but got '%s'", tc.expected, got)
 			}
