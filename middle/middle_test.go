@@ -41,7 +41,10 @@ func TestRedact(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(fmt.Sprintf("input=%q;expected=%q; ", tc.input, tc.expected), func(t *testing.T) {
 			r := New()
-			got := r.Redact(tc.input)
+			got, err := r.Redact(tc.input)
+			if err != nil {
+				t.Error(err)
+			}
 			if tc.expected != got {
 				t.Errorf("Expected '%s', but got '%s'", tc.expected, got)
 			}
@@ -82,7 +85,10 @@ func TestPrefixOnlyMode(t *testing.T) {
 				t.Error(err)
 			}
 
-			got := r.Redact(tc.input)
+			got, err := r.Redact(tc.input)
+			if err != nil {
+				t.Error(err)
+			}
 			if tc.expected != got {
 				t.Errorf("Expected '%s', but got '%s'", tc.expected, got)
 			}
@@ -124,7 +130,10 @@ func TestSuffixOnlyMode(t *testing.T) {
 				t.Error(err)
 			}
 
-			got := r.Redact(tc.input)
+			got, err := r.Redact(tc.input)
+			if err != nil {
+				t.Error(err)
+			}
 			if tc.expected != got {
 				t.Errorf("Expected '%s', but got '%s'", tc.expected, got)
 			}
@@ -166,7 +175,10 @@ func TestWithPrefixLength(t *testing.T) {
 				t.Error(err)
 			}
 
-			got := r.Redact(tc.input)
+			got, err := r.Redact(tc.input)
+			if err != nil {
+				t.Error(err)
+			}
 			if tc.expected != got {
 				t.Errorf("Expected '%s', but got '%s'", tc.expected, got)
 			}
@@ -209,7 +221,10 @@ func TestWithSuffixLength(t *testing.T) {
 				t.Error(err)
 			}
 
-			got := r.Redact(tc.input)
+			got, err := r.Redact(tc.input)
+			if err != nil {
+				t.Error(err)
+			}
 			if tc.expected != got {
 				t.Errorf("Expected '%s', but got '%s'", tc.expected, got)
 			}
@@ -242,7 +257,10 @@ func TestWithReplacementText(t *testing.T) {
 				t.Error(err)
 			}
 
-			got := r.Redact(tc.input)
+			got, err := r.Redact(tc.input)
+			if err != nil {
+				t.Error(err)
+			}
 			if tc.expected != got {
 				t.Errorf("Expected '%s', but got '%s'", tc.expected, got)
 			}

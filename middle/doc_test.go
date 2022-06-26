@@ -1,6 +1,9 @@
 package middle
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 const (
 	sampleString = "this string contains sensitive information"
@@ -9,7 +12,12 @@ const (
 func Example() {
 	redactor := New()
 
-	fmt.Println(redactor.Redact(sampleString))
+	result, err := redactor.Redact(sampleString)
+	if err != nil {
+		log.Fatalf("an error occurred while redacting: %s", err)
+	}
+
+	fmt.Println(result)
 	// Output: thi[redacted]ion
 }
 
@@ -20,9 +28,14 @@ func Example_usingOptions() {
 		WithPrefixLength(8),
 	)
 	if err != nil {
-		panic(err)
+		log.Fatalf("an error occurred while creating redactor: %s", err)
 	}
 
-	fmt.Println(redactor.Redact(sampleString))
+	result, err := redactor.Redact(sampleString)
+	if err != nil {
+		log.Fatalf("an error occurred while redacting: %s", err)
+	}
+
+	fmt.Println(result)
 	// Output: this strXXXXX
 }

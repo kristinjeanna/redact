@@ -84,25 +84,25 @@ func NewFromOptions(opts ...Option) (redact.Redactor, error) {
 }
 
 // Redact redacts the input string and returns the result.
-func (m MiddleRedactor) Redact(s string) string {
+func (m MiddleRedactor) Redact(s string) (string, error) {
 	length := uint(len(s))
 	lengthReplText := uint(len(m.replacementText))
 	minLength := m.prefixLength + lengthReplText + m.suffixLength
 
 	if length == 0 {
-		return s
+		return s, nil
 	}
 
 	// long enough for prefix & suffix
 	if length >= minLength {
 		if m.mode == FullMode {
-			return s[:m.prefixLength] + m.replacementText + s[length-m.suffixLength:]
+			return s[:m.prefixLength] + m.replacementText + s[length-m.suffixLength:], nil
 		}
 		if m.mode == PrefixOnlyMode {
-			return s[:m.prefixLength] + m.replacementText
+			return s[:m.prefixLength] + m.replacementText, nil
 		}
 		if m.mode == SuffixOnlyMode {
-			return m.replacementText + s[length-m.suffixLength:]
+			return m.replacementText + s[length-m.suffixLength:], nil
 		}
 	}
 
@@ -111,16 +111,16 @@ func (m MiddleRedactor) Redact(s string) string {
 		showPrefix := m.mode == PrefixOnlyMode || m.mode == FullMode
 
 		if showPrefix && length >= m.prefixLength+lengthReplText {
-			return s[:m.prefixLength] + m.replacementText // redact with prefix
+			return s[:m.prefixLength] + m.replacementText, nil // redact with prefix
 		}
 
 		if !showPrefix && length >= m.suffixLength+lengthReplText {
-			return m.replacementText + s[length-m.suffixLength:] // redact with suffix
+			return m.replacementText + s[length-m.suffixLength:], nil // redact with suffix
 		}
 	}
 
 	// length <= lengthReplText but not 0
-	return m.replacementText
+	return m.replacementText, nil
 }
 
 func (m MiddleRedactor) String() string {
