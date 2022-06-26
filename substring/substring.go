@@ -23,8 +23,8 @@ func New(substring string, replacement string) redact.Redactor {
 }
 
 // Redact replaces all occurrences of the substring in the specified string.
-func (r SubstringRedactor) Redact(s string) string {
-	return strings.ReplaceAll(s, r.substring, r.replacement)
+func (r SubstringRedactor) Redact(s string) (string, error) {
+	return strings.ReplaceAll(s, r.substring, r.replacement), nil
 }
 
 func (r SubstringRedactor) String() string {

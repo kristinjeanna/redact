@@ -22,7 +22,10 @@ func TestRedact(t *testing.T) {
 		t.Run(fmt.Sprintf("input=%q;substring=%q;replacement=%q;expected=%q; ",
 			tc.input, tc.substring, tc.replacement, tc.expected), func(t *testing.T) {
 			r := New(tc.substring, tc.replacement)
-			got := r.Redact(tc.input)
+			got, err := r.Redact(tc.input)
+			if err != nil {
+				t.Error(err)
+			}
 			if tc.expected != got {
 				t.Errorf("Expected '%s', but got '%s'", tc.expected, got)
 			}
