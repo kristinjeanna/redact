@@ -17,9 +17,11 @@ const (
 )
 
 var (
-	errRegexEmpty        = errors.New("regex is required")
-	errRePairsSliceNil   = errors.New("regex pairs slice must not be nil")
-	errRePairsSliceEmpty = errors.New("regex slice must not be empty")
+	errRegexEmpty        = errors.New("regex.NewPair: regex is required")
+	errRePairsSliceNil   = errors.New("regex.New: regex pairs slice must not be nil")
+	errRePairsSliceEmpty = errors.New("regex.New: regex pairs slice must not be empty")
+
+	errMsgFmtCompileFailure = "regex.NewPair: regex failed to compile, %w"
 )
 
 // Pair represents a regular expression and the corresponding
@@ -41,7 +43,7 @@ func NewPair(replacement string, regex string) (*Pair, error) {
 	}
 	rec, err := regexp.Compile(regex)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(errMsgFmtCompileFailure, err)
 	}
 
 	return &Pair{

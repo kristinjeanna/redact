@@ -39,9 +39,9 @@ const (
 )
 
 var (
-	errReplacementTextTooShort = fmt.Errorf("length of replacement text must not be less than %d", replacementTextMinLength)
-	errPrefixLengthTooShort    = fmt.Errorf("prefix length must not be less than %d", prefixLengthMinimum)
-	errSuffixLengthTooShort    = fmt.Errorf("suffix length must not be less than %d", suffixLengthMinimum)
+	errReplacementTextTooShort = fmt.Errorf("middle.NewFromOptions: length of replacement text must not be less than %d", replacementTextMinLength)
+	errPrefixLengthTooShort    = fmt.Errorf("middle.NewFromOptions: prefix length must not be less than %d", prefixLengthMinimum)
+	errSuffixLengthTooShort    = fmt.Errorf("middle.NewFromOptions: suffix length must not be less than %d", suffixLengthMinimum)
 )
 
 type MiddleRedactor struct {
