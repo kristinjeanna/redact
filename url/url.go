@@ -32,12 +32,17 @@ func (r URLRedactor) Redact(url string) (string, error) {
 	if u.User != nil {
 		_, hasPW := u.User.Password()
 
-		if hasPW && r.usernameReplacement == nil {
-			u.User = pkgurl.UserPassword(u.User.Username(), r.passwordReplacement)
-		} else if hasPW && r.usernameReplacement != nil {
-			u.User = pkgurl.UserPassword(*r.usernameReplacement, r.passwordReplacement)
-		} else if !hasPW && r.usernameReplacement != nil {
-			u.User = pkgurl.User(*r.usernameReplacement)
+		switch hasPW {
+		case true:
+			if r.usernameReplacement == nil {
+				u.User = pkgurl.UserPassword(u.User.Username(), r.passwordReplacement)
+			} else if r.usernameReplacement != nil {
+				u.User = pkgurl.UserPassword(*r.usernameReplacement, r.passwordReplacement)
+			}
+		case false:
+			if r.usernameReplacement != nil {
+				u.User = pkgurl.User(*r.usernameReplacement)
+			}
 		}
 	}
 
