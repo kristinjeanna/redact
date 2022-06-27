@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func Example() {
+func ExampleSimpleRedactor() {
 	redactor := New("[redacted]")
 	sampleString := "this string contains sensitive information"
 

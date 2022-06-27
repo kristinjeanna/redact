@@ -49,6 +49,7 @@ func (r URLRedactor) Redact(url string) (string, error) {
 	return u.String(), nil
 }
 
+// String returns a text representation of the redactor.
 func (r URLRedactor) String() string {
 	return fmt.Sprintf("{passwordReplacement=%q, usernameReplacement=%v}",
 		r.passwordReplacement, r.usernameReplacement)

@@ -59,10 +59,6 @@ type RegexRedactor struct {
 	pairs []Pair
 }
 
-func (r RegexRedactor) String() string {
-	return fmt.Sprintf("{pairs=%q}", r.pairs)
-}
-
 // New returns a new RegexRedactor.
 func New(rePairs []Pair) (redact.Redactor, error) {
 	if rePairs == nil {
@@ -85,4 +81,9 @@ func (r RegexRedactor) Redact(s string) (string, error) {
 	}
 
 	return src, nil
+}
+
+// String returns a text representation of the redactor.
+func (r RegexRedactor) String() string {
+	return fmt.Sprintf("{pairs=%q}", r.pairs)
 }

@@ -27,6 +27,7 @@ func (r SubstringRedactor) Redact(s string) (string, error) {
 	return strings.ReplaceAll(s, r.substring, r.replacement), nil
 }
 
+// String returns a text representation of the redactor.
 func (r SubstringRedactor) String() string {
 	return fmt.Sprintf("{substring=%q; replacement=%q}", r.substring, r.replacement)
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/kristinjeanna/redact/substring"
 )
 
-func Example() {
+func ExampleChainRedactor() {
 	substringRedactor := substring.New("contains", "HIDES")
 
 	regexPair, err := regex.NewPair(" [redacted] ", `(?i)\ss\w*\s`)

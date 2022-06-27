@@ -5,9 +5,9 @@ import (
 	"log"
 )
 
-func Example() {
+func ExampleURLRedactor() {
 	redactor := New("REDACTED", nil)
-	sampleString := "mysql://user:foobar@localhost:3333"
+	sampleString := "mysql://user:foobar@localhost:3306"
 
 	result, err := redactor.Redact(sampleString)
 	if err != nil {
@@ -15,5 +15,5 @@ func Example() {
 	}
 
 	fmt.Println(result)
-	// Output: mysql://user:REDACTED@localhost:3333
+	// Output: mysql://user:REDACTED@localhost:3306
 }

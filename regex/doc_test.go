@@ -7,7 +7,7 @@ import (
 
 const sampleString = "this string contains sensitive information"
 
-func Example() {
+func ExampleRegexRedactor() {
 	// a Pair hold the regex and the replacement string for matches
 	pair, err := NewPair("X", "[is]")
 	if err != nil {

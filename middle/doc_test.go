@@ -9,7 +9,7 @@ const (
 	sampleString = "this string contains sensitive information"
 )
 
-func Example() {
+func ExampleMiddleRedactor() {
 	redactor := New()
 
 	result, err := redactor.Redact(sampleString)
@@ -21,7 +21,7 @@ func Example() {
 	// Output: thi[redacted]ion
 }
 
-func Example_usingOptions() {
+func ExampleNewFromOptions() {
 	redactor, err := NewFromOptions(
 		WithMode(PrefixOnlyMode),
 		WithReplacementText("XXXXX"),

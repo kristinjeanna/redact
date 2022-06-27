@@ -22,6 +22,7 @@ func (r SimpleRedactor) Redact(s string) (string, error) {
 	return r.replacement, nil
 }
 
+// String returns a text representation of the redactor.
 func (r SimpleRedactor) String() string {
 	return fmt.Sprintf("{replacement=%q}", r.replacement)
 }

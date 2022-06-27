@@ -32,6 +32,7 @@ func New(redactors []redact.Redactor) ChainRedactor {
 	return ChainRedactor(redactors)
 }
 
+// String returns a text representation of the redactor.
 func (r ChainRedactor) String() string {
 	return fmt.Sprintf("{redactors=%q}", []redact.Redactor(r))
 }

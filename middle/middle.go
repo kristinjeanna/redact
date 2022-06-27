@@ -14,6 +14,7 @@ const (
 	SuffixOnlyMode
 )
 
+// String returns a text representation of the mode.
 func (m Mode) String() string {
 	switch m {
 	case PrefixOnlyMode:
@@ -44,6 +45,7 @@ var (
 	errSuffixLengthTooShort    = fmt.Errorf("middle.NewFromOptions: suffix length must not be less than %d", suffixLengthMinimum)
 )
 
+// MiddleRedactor is a redactor that replaces the middle contents of a string with a replacement string, leaving a prefix of unredacted characters and a suffix of unredacted characters if the input string is long enough. For shorter input strings, the redactor uses only a prefix or suffix or just the replacement string itself.
 type MiddleRedactor struct {
 	mode            Mode
 	prefixLength    uint
@@ -123,6 +125,7 @@ func (m MiddleRedactor) Redact(s string) (string, error) {
 	return m.replacementText, nil
 }
 
+// String returns a text representation of the redactor.
 func (m MiddleRedactor) String() string {
 	return fmt.Sprintf(
 		"{mode:%q; replacementText=%q; prefixLength=%d; suffixLength=%d}",
