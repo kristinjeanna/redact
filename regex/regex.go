@@ -36,7 +36,7 @@ func (p Pair) String() string {
 	return fmt.Sprintf("{regex=%q; replacement=%q}", p.regex, p.replacement)
 }
 
-// NewPair returns new Pair.
+// NewPair returns a new Pair.
 func NewPair(replacement string, regex string) (*Pair, error) {
 	if len(regex) == 0 {
 		return nil, errRegexEmpty
@@ -53,8 +53,10 @@ func NewPair(replacement string, regex string) (*Pair, error) {
 	}, nil
 }
 
-// RegexRedactor is a redactor that replaces matching
-// substrings with a specified replacement string.
+// RegexRedactor is a redactor that replaces substrings matching a given
+// regular expression with a specified replacement string. Multiple pairs
+// of replacement strings and regular expressions can be specified to chain
+// the behavior.
 type RegexRedactor struct {
 	pairs []Pair
 }

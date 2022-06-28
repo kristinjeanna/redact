@@ -7,8 +7,8 @@ import (
 	"github.com/kristinjeanna/redact"
 )
 
-// URLRedactor permits redacting a password and, optionally
-// a username, from a URL.
+// URLRedactor enables redacting a password and, optionally
+// a username, from a URL string.
 type URLRedactor struct {
 	passwordReplacement string
 	usernameReplacement *string
