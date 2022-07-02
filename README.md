@@ -216,7 +216,7 @@ import (
 
 func main() {
     // a regex.Pair holds the regex and the replacement string for matches
-    pair, err := regex.NewPair("X", "[is]")
+    pair, err := regex.NewPairUsingSimple("X", "[is]")
     if err != nil {
         log.Fatalf("an error occurred while create regex replacement pair: %s", err)
     }

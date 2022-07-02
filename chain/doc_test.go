@@ -12,7 +12,7 @@ import (
 func ExampleChainRedactor() {
 	substringRedactor := substring.New("contains", "HIDES")
 
-	regexPair, err := regex.NewPair(" [redacted] ", `(?i)\ss\w*\s`)
+	regexPair, err := regex.NewPairUsingSimple(" [redacted] ", `(?i)\ss\w*\s`)
 	if err != nil {
 		log.Fatalf("an error occurred while creating regex pair: %s", err)
 	}

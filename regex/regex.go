@@ -3,9 +3,9 @@ package regex
 import (
 	"errors"
 	"fmt"
-	"regexp"
 
 	"github.com/kristinjeanna/redact"
+	"github.com/kristinjeanna/redact/simple"
 )
 
 const (
@@ -17,41 +17,12 @@ const (
 )
 
 var (
-	errRegexEmpty        = errors.New("regex.NewPair: regex is required")
-	errRePairsSliceNil   = errors.New("regex.New: regex pairs slice must not be nil")
-	errRePairsSliceEmpty = errors.New("regex.New: regex pairs slice must not be empty")
+	errRePairsSliceNil         = errors.New("regex.New: regex pairs slice must not be nil")
+	errRePairsSliceEmpty       = errors.New("regex.New: regex pairs slice must not be empty")
+	errRegexMatchesReplacement = errors.New("regex.RegexRedactor.Redact: regex must not match replacement text returned from the pair's redactor")
 
-	errMsgFmtCompileFailure = "regex.NewPair: regex failed to compile, %w"
+	errMsgFmtRedactFailure = "regex.RegexRedactor.Redact: error while redacting, %w"
 )
-
-// Pair represents a regular expression and the corresponding
-// expression that replaces regex matches
-type Pair struct {
-	replacement string
-	regex       string
-	compiled    *regexp.Regexp
-}
-
-func (p Pair) String() string {
-	return fmt.Sprintf("{regex=%q; replacement=%q}", p.regex, p.replacement)
-}
-
-// NewPair returns a new Pair.
-func NewPair(replacement string, regex string) (*Pair, error) {
-	if len(regex) == 0 {
-		return nil, errRegexEmpty
-	}
-	rec, err := regexp.Compile(regex)
-	if err != nil {
-		return nil, fmt.Errorf(errMsgFmtCompileFailure, err)
-	}
-
-	return &Pair{
-		replacement: replacement,
-		regex:       regex,
-		compiled:    rec,
-	}, nil
-}
 
 // RegexRedactor is a redactor that replaces substrings matching a given
 // regular expression with a specified replacement string. Multiple pairs
@@ -79,7 +50,34 @@ func (r RegexRedactor) Redact(s string) (string, error) {
 	src := s
 
 	for _, pair := range r.pairs {
-		src = pair.compiled.ReplaceAllString(src, pair.replacement)
+		switch pair.redactor.(type) {
+		case simple.SimpleRedactor:
+			repl, _ := pair.redactor.Redact("")
+			src = pair.compiled.ReplaceAllString(src, repl)
+		default:
+			indexes := pair.compiled.FindAllStringIndex(src, -1)
+			count := len(indexes) // infinite loop prevention
+
+			for indexes != nil {
+				loc := indexes[0]
+				found := src[loc[0]:loc[1]]
+				repl, err := pair.redactor.Redact(found)
+				if err != nil {
+					return "", fmt.Errorf(errMsgFmtRedactFailure, err)
+				}
+
+				src = replaceSubstring(src, repl, loc[0], loc[1])
+				indexes = pair.compiled.FindAllStringIndex(src, -1)
+
+				// the length of indexes should only decrease with each iteration
+				// if it doesn't, that means the regex matched on the replacement text;
+				// return error here to prevent infinite loop
+				if len(indexes) >= count {
+					return "", errRegexMatchesReplacement
+				}
+				count = len(indexes)
+			}
+		}
 	}
 
 	return src, nil
@@ -87,5 +85,20 @@ func (r RegexRedactor) Redact(s string) (string, error) {
 
 // String returns a text representation of the redactor.
 func (r RegexRedactor) String() string {
-	return fmt.Sprintf("{pairs=%q}", r.pairs)
+	return fmt.Sprintf("{pairs=%v}", r.pairs)
+}
+
+func replaceSubstring(in string, repl string, from int, to int) string {
+	inRunes := []rune(in)
+	replRunes := []rune(repl)
+	outRunes := make([]rune, 0)
+
+	if from != 0 {
+		outRunes = append(outRunes, inRunes[:from]...)
+	}
+
+	outRunes = append(outRunes, replRunes...)
+	outRunes = append(outRunes, inRunes[to:]...)
+
+	return string(outRunes)
 }

@@ -3,18 +3,26 @@ package regex
 import (
 	"fmt"
 	"testing"
+
+	"github.com/kristinjeanna/redact"
+	"github.com/kristinjeanna/redact/blackout"
+	"github.com/kristinjeanna/redact/middle"
+	"github.com/kristinjeanna/redact/url"
 )
 
 var (
-	pair1, pair2, pair3, pair4, pair5 *Pair
+	pair1, pair2, pair3, pair4, pair5, pair6, pair7 *Pair
 )
 
 func setupPairs() {
-	pair1, _ = NewPair("[redacted]", "test")
-	pair2, _ = NewPair("X", "[is]")
-	pair3, _ = NewPair("XXXX", ".*")
-	pair4, _ = NewPair("${1}XXXX${3}", `(.*)(b[aA][rR])(.*)`)
-	pair5, _ = NewPair("${1}zed${3}", `^(.*\s)(.*)$`)
+	pair1, _ = NewPairUsingSimple("[redacted]", "test")
+	pair2, _ = NewPairUsingSimple("X", "[is]")
+	pair3, _ = NewPairUsingSimple("XXXX", ".*")
+	pair4, _ = NewPairUsingSimple("${1}XXXX${3}", `(.*)(b[aA][rR])(.*)`)
+	pair5, _ = NewPairUsingSimple("${1}zed${3}", `^(.*\s)(.*)$`)
+
+	pair6, _ = NewPair(middle.New(), `b[aA][rRzZ]`)
+	pair7, _ = NewPair(blackout.New("X"), SSNRegex)
 }
 
 type testCase struct {
@@ -32,6 +40,8 @@ func TestRedact(t *testing.T) {
 		{"foo is bar", []Pair{*pair3}, "XXXX"},
 		{"foo is bar zaz", []Pair{*pair4}, "foo is XXXX zaz"},
 		{"foo is bar zaz", []Pair{*pair4, *pair5}, "foo is XXXX zed"},
+		{"foo is bar baz", []Pair{*pair6}, "foo is [redacted] [redacted]"},
+		{"the SSN is 123-45-6789", []Pair{*pair7}, "the SSN is XXXXXXXXXXX"},
 	}
 
 	for _, tc := range cases {
@@ -57,7 +67,7 @@ type testCaseErr struct {
 	expected    error  // the expected error
 }
 
-func TestRedact_err(t *testing.T) {
+func TestRedact_errorsSpecific(t *testing.T) {
 	cases := []testCaseErr{
 		{"[redacted]", nil, errRePairsSliceNil},
 		{"[redacted]", []Pair{}, errRePairsSliceEmpty},
@@ -76,30 +86,47 @@ func TestRedact_err(t *testing.T) {
 	}
 }
 
-func TestNewPair_err(t *testing.T) {
-	_, err := NewPair("test", "")
-	if err == nil {
-		t.Errorf("Expected '%v', but got nil", errRegexEmpty)
-	}
-	if err != errRegexEmpty {
-		t.Errorf("Expected '%v', but got '%v'", errRegexEmpty, err)
+func TestRedact_errorsInfLoop(t *testing.T) {
+	s := "this string contains redacted"
+	m, err := middle.NewFromOptions(middle.WithReplacementText("[redacted]"))
+	if err != nil {
+		t.Error(err)
 	}
 
-	_, err = NewPair("test", "foo+++++")
+	pair, err := NewPair(m, "redacted")
+	if err != nil {
+		t.Error(err)
+	}
+
+	var r redact.Redactor
+	r, err = New([]Pair{*pair})
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = r.Redact(s)
 	if err == nil {
-		t.Error("Expected an error, but got nil")
+		t.Errorf("Expected an error, but got nil")
 	}
 }
 
-func TestString(t *testing.T) {
-	pair, _ := NewPair("[redacted]", "test")
-	redactor, _ := New([]Pair{*pair})
-	reRedactor := redactor.(fmt.Stringer)
+func TestRedact_errorsRedactFail(t *testing.T) {
+	s := "this string contains redacted"
+	u := url.New("foo", nil)
 
-	expected := `{pairs=["{regex=\"test\"; replacement=\"[redacted]\"}"]}`
-	got := reRedactor.String()
+	pair, err := NewPair(u, "[is]")
+	if err != nil {
+		t.Error(err)
+	}
 
-	if expected != got {
-		t.Errorf("Expected '%s', but got '%s'", expected, got)
+	var r redact.Redactor
+	r, err = New([]Pair{*pair})
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = r.Redact(s)
+	if err == nil {
+		t.Errorf("Expected an error, but got nil")
 	}
 }
