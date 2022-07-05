@@ -197,10 +197,22 @@ func main() {
 
 ### `regex`
 
-The `regex` reactor is a redactor that replaces substrings matching a given
-regular expression with a specified replacement string. Multiple pairs
-of replacement strings and regular expressions can be specified to chain
-the behavior.
+The `regex` reactor is a redactor that performs redaction according to a slice of
+redactor/regex pairs. For each match of a regex, the corresponding redactor is
+executed on that match.
+
+New pairs can be created via the `NewPair()` and the
+`NewPairUsingSimple()` functions. `NewPairUsingSimple()` is a convenience
+method to create a pair using a `SimpleRedactor` which associates a regex
+with a replacement string. This function is also the means by which regular
+expression capture groups can be used since the
+`(*regexp.Regexp).ReplaceAllString()` is employed by the `Redact()` function
+for pairs having a `SimpleRedactor`. When a pair possesses a redactor other
+than `SimpleRedactor`, the `Redact()` function invokes the redactor on
+successively modified versions of the input string. Capture group may not
+always work, especially in the cases where the replacement text matches against
+the regex. The `Redact()` method will return an error in such cases to prevent
+an infinite loop.
 
 The following example redacts the letters "i" and "s" from the input string:
 
@@ -234,6 +246,42 @@ func main() {
 
     fmt.Println(result)
     // Output: thXX XtrXng contaXnX XenXXtXve XnformatXon
+}
+```
+
+The following shows an example of using capture groups:
+
+```go
+package main
+
+import (
+    "fmt"
+    "log"
+
+    "github.com/kristinjeanna/redact/regex"
+)
+
+func main() {
+    // a regex.Pair holds the regex and the replacement redactor for matches
+    pair, err := NewPairUsingSimple("${1}XXXX", "(b[aA][rRzZ])")
+    if err != nil {
+        log.Fatalf("an error occurred while creating the regex pair: %s", err)
+    }
+
+    // the redactor is constructed with a slice of Pairs
+    redactor, err := New([]Pair{*pair})
+    if err != nil {
+        log.Fatalf("an error occurred while creating redactor: %s", err)
+    }
+
+    sampleString := "foo bar baz"
+    result, err := redactor.Redact(sampleString)
+    if err != nil {
+        log.Fatalf("an error occurred while redacting: %s", err)
+    }
+
+    fmt.Println(result)
+    // Output: foo barXXXX bazXXXX
 }
 ```
 
@@ -293,7 +341,7 @@ import (
 func main() {
     substringRedactor := substring.New("contains", "HIDES")
 
-    regexPair, err := regex.NewPair(" [redacted] ", `(?i)\ss\w*\s`)
+    regexPair, err := regex.NewPairUsingSimple(" [redacted] ", `(?i)\ss\w*\s`)
     if err != nil {
         log.Fatalf("an error occurred while creating regex pair: %s", err)
     }
